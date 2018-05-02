@@ -18,15 +18,15 @@ module.exports.checkLogin = user => {
   });
 };
 
-function validateDetails(user) {
-  console.log(user);
-  return user.name !== 'puki';
-}
+// function validateDetails(user) {
+//   console.log(user);
+//   return user.name !== 'puki';
+// }
 
 module.exports.addUser = user => {
   return new Promise((resolve, reject) => {
-    let isValidate = validateDetails(user);
-    if (!isValidate) reject('Validate failed!');
+    // let isValidate = validateDetails(user);
+    // if (!isValidate) reject('Validate failed!');
     DBService.dbConnect().then(db => {
       db
         .collection('user')
@@ -48,3 +48,4 @@ module.exports.addUser = user => {
     });
   });
 };
+
