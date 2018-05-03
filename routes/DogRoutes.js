@@ -1,3 +1,4 @@
+
 var DogService = require("../services/DogService");
 var DOG_URL = "/dog";
 
@@ -25,6 +26,25 @@ module.exports = app => {
       .catch(err => res.status(500).send(err.message));
   });
 
+  app.get(`${DOG_URL}/next/:prevId?`, (req, res) => {
+    const prevId = req.params.prevId;
+    DogService.getNextDogs(prevId)
+    .then(dog => {
+      res.json(dog);
+    })
+    .catch(err => res.status(500).send(err.message));
+  });
+  
+  // app.get(`${DOG_URL}/next/:dogId?`, (req, res) => {
+  //   const dogId = req.params.dogId;
+  //   console.log({dogId})
+  //   DogService.getNextDog(dogId)
+  //   .then(dog => {
+  //     res.json(dog);
+  //   })
+  //   .catch(err => res.status(500).send(err.message));
+  // });
+  
   app.get(`${DOG_URL}/:dogId`, (req, res) => {
     const dogId = req.params.dogId;
     DogService.getById(dogId)
@@ -45,6 +65,7 @@ module.exports = app => {
   });
 
   app.post(DOG_URL, (req, res) => {
+    console.log('inside post');
     const dog = req.body;
     DogService.addDog(dog)
       .then(dog => res.json(dog))
@@ -54,6 +75,7 @@ module.exports = app => {
   app.put(`${DOG_URL}/:dogId`, (req, res) => {
     const dogId = req.params.dogId;
     const dog = req.body;
+    dog._id = dogId;
     DogService.updateDog(dog)
       .then(dog => res.json(dog))
       .catch(err => res.status(500).send("Could not update dog"));

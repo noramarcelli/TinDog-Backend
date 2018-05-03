@@ -31,8 +31,43 @@ function getById(dogId) {
         })
     });
 }
+
+
+// function getNextDog(curId){
+//     console.log({curId})
+//     var criteria = {}
+//     if (curId) criteria._id = {$gt: new mongo.ObjectID(curId)}
+//     return new Promise((resolve, reject)=>{
+//         DBService.dbConnect()
+//         .then(db=>{
+//             db.collection('dog').find(criteria).sort({_id: 1 }).limit(1).toArray( (err, dog) => {
+//                 if (err)    reject(err)
+//                 else        resolve(dog);
+//                 db.close();
+//             });
+//         })
+//     });
+// }
+
+function getNextDogs(prevId){
+    console.log({prevId})
+    var criteria = {}
+    if (prevId) criteria._id = {$gt: new mongo.ObjectID(prevId)}
+    return new Promise((resolve, reject)=>{
+        DBService.dbConnect()
+        .then(db=>{
+            db.collection('dog').find(criteria).sort({_id: 1 }).limit(2).toArray( (err, dog) => {
+                if (err)    reject(err)
+                else        resolve(dog);
+                db.close();
+            });
+        })
+    });
+}
+
+
 function deleteDog(dogId) {
-    toyId = new mongo.ObjectID(dogId);
+    dogId = new mongo.ObjectID(dogId);
     return new Promise((resolve, reject)=>{
         DBService.dbConnect()
         .then(db=>{
@@ -49,7 +84,7 @@ function addDog(dog) {
     return new Promise((resolve, reject)=>{
         DBService.dbConnect()
         .then(db=>{
-            db.collection('Dog').insert(dog, function (err, res) {
+            db.collection('dog').insert(dog, function (err, res) {
                 if (err)    reject(err)
                 else        resolve(res.ops[0]);
                 db.close();
@@ -63,7 +98,7 @@ function updateDog(dog) {
     return new Promise((resolve, reject)=>{
         DBService.dbConnect()
         .then(db=>{
-            db.collection('dog').updateOne({_id : dog._id}, toy, function (err, updatedDog) {
+            db.collection('dog').updateOne({_id : dog._id}, dog, function (err, updatedDog) {
                 if (err)    reject(err)
                 else        resolve(updatedDog);
                 db.close();
@@ -72,10 +107,13 @@ function updateDog(dog) {
     });
 }
 
+
 module.exports = {
     getDogs,
     getById,
     deleteDog,
     updateDog,
-    addDog
+    addDog,
+    // getNextDog,
+    getNextDogs
 }
