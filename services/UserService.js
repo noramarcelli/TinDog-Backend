@@ -10,6 +10,7 @@ module.exports.checkLogin = user => {
           err,
           userFromDB
         ) {
+          console.log("userFromDB in backend service", userFromDB);
           if (err) reject(err)
           else resolve(userFromDB)
           db.close();
