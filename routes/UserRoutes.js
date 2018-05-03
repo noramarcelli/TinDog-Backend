@@ -1,9 +1,11 @@
 var UserService = require('../services/UserService')
+var USER_URL = "/user";
 
 module.exports = app => {
   app.post('/login', (req, res) => {
 
     const user = req.body;
+    console.log({user})
     UserService.checkLogin(user).then(userFromDB => {
       console.log('userFromDB', userFromDB)
       if (userFromDB) {
@@ -36,6 +38,13 @@ module.exports = app => {
     res.end(`Profile of ${req.session.user.name}`);
   });
 
+  app.get(`${USER_URL}/dog`, (req, res) => {
+    UserService.getUsersDogs()
+      .then(dogs => {
+        res.json(dogs);
+      })
+      .catch(err => res.status(500).send(err.message));
+  });
 
 
 };
