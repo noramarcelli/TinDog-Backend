@@ -18,7 +18,6 @@ function getDogs() {
 }
 
 function getById(dogId) {
-
     dogId = new mongo.ObjectID(dogId);
     return new Promise((resolve, reject)=>{
         DBService.dbConnect()
@@ -33,30 +32,15 @@ function getById(dogId) {
 }
 
 
-// function getNextDog(curId){
-//     console.log({curId})
-//     var criteria = {}
-//     if (curId) criteria._id = {$gt: new mongo.ObjectID(curId)}
-//     return new Promise((resolve, reject)=>{
-//         DBService.dbConnect()
-//         .then(db=>{
-//             db.collection('dog').find(criteria).sort({_id: 1 }).limit(1).toArray( (err, dog) => {
-//                 if (err)    reject(err)
-//                 else        resolve(dog);
-//                 db.close();
-//             });
-//         })
-//     });
-// }
-
-function getNextDogs(prevId){
+function getNextDogs(prevId, userDogId){
     console.log({prevId})
     var criteria = {}
-    if (prevId) criteria._id = {$gt: new mongo.ObjectID(prevId)}
+    if (prevId) criteria._id = {  $gt: new mongo.ObjectID(prevId) ,  $ne: new mongo.ObjectID(userDogId)}
+    else criteria._id = { $ne: new mongo.ObjectID(userDogId) }
     return new Promise((resolve, reject)=>{
         DBService.dbConnect()
         .then(db=>{
-            db.collection('dog').find(criteria).sort({_id: 1 }).limit(2).toArray( (err, dog) => {
+            db.collection('dog').find(criteria).limit(2).toArray( (err, dog) => {
                 if (err)    reject(err)
                 else        resolve(dog);
                 db.close();
@@ -114,6 +98,5 @@ module.exports = {
     deleteDog,
     updateDog,
     addDog,
-    // getNextDog,
     getNextDogs
 }
