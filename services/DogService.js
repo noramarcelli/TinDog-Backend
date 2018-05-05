@@ -1,7 +1,8 @@
 const mongo = require('mongodb');
 const DBService = require('./DBService');
-
+var cloudinary = require('cloudinary');
 var MongoClient = mongo.MongoClient;
+var cloudinaryIsInit = false;
 
 function getDogs() {
     return new Promise((resolve, reject)=>{
@@ -91,6 +92,29 @@ function updateDog(dog) {
     });
 }
 
+function uploadImg(imgUrl) {
+    _initCloudinary();
+
+    return new Promise((resolve, reject)=>{
+    cloudinary.v2.uploader.upload(imgUrl, (err, res) => {
+        console.log('res', res);
+        if (err)    reject(err)
+        else        resolve(res);
+    });
+   });
+}
+
+function _initCloudinary(){
+    if(!cloudinaryIsInit) {
+        cloudinary.config({
+            cloud_name: 'ilanamost',
+            api_key: '126843244928435',
+            api_secret: 'Pn9z1wRYWbHXb_lAX_zM5QTAUJY'
+        });
+        cloudinaryIsInit = true;
+    }
+}
+
 
 module.exports = {
     getDogs,
@@ -98,5 +122,6 @@ module.exports = {
     deleteDog,
     updateDog,
     addDog,
-    getNextDogs
+    getNextDogs,
+    uploadImg
 }

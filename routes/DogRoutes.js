@@ -56,4 +56,11 @@ module.exports = app => {
       .then(dog => res.json(dog))
       .catch(err => res.status(500).send("Could not update dog"));
   });
+
+  app.post(`${DOG_URL}/uploadImg`, (req, res) => {
+    const imgUrl = req.body.imgUrl;
+    DogService.uploadImg(imgUrl)
+      .then(response => res.json({url: response.url}))
+      .catch(err => res.status(500).send("Could not add image"));
+  });
 };
