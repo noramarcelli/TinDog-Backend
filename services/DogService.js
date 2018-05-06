@@ -134,6 +134,25 @@ function addLike(likedId, userDogId) {
     });
 }
 
+function getDogsLikes(userDogId){
+  var criteria = { pendingLikesIds: userDogId };
+  console.log('criteria', criteria);
+  
+
+  return new Promise((resolve, reject) => {
+    DBService.dbConnect().then(db => {
+      db
+        .collection("dog")
+        .find(criteria)
+        .toArray((err, dogs) => {
+          if (err) reject(err);
+          else resolve(dogs);
+          db.close();
+        });
+    });
+  });
+}
+
 module.exports = {
   getDogs,
   getById,
@@ -142,5 +161,6 @@ module.exports = {
   addDog,
   getNextDogs,
   uploadImg,
-  addLike
+  addLike,
+  getDogsLikes
 };
