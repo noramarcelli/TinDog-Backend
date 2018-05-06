@@ -32,29 +32,23 @@ function getById(dogId) {
   });
 }
 
-function getNextDogs(prevId, userDogId) {
-  console.log({ prevId });
-  var criteria = {};
-  if (prevId)
-    criteria._id = {
-      $gt: new mongo.ObjectID(prevId),
-      $ne: new mongo.ObjectID(userDogId)
-    };
-  else criteria._id = { $ne: new mongo.ObjectID(userDogId) };
-  return new Promise((resolve, reject) => {
-    DBService.dbConnect().then(db => {
-      db
-        .collection("dog")
-        .find(criteria)
-        .limit(2)
-        .toArray((err, dogs) => {
-          if (err) reject(err);
-          else resolve(dogs);
-          db.close();
-        });
+function getNextDogs(prevId, userDogId){
+    console.log({prevId})
+    var criteria = {}
+    if (prevId) criteria._id = {  $gt: new mongo.ObjectID(prevId) ,  $ne: new mongo.ObjectID(userDogId)}
+    else criteria._id = { $ne: new mongo.ObjectID(userDogId) }
+    return new Promise((resolve, reject)=>{
+        DBService.dbConnect()
+        .then(db=>{
+            db.collection('dog').find(criteria).limit(2).toArray( (err, dogs) => {
+                if (err)    reject(err)
+                else        resolve(dogs);
+                db.close();
+            });
+        })
     });
-  });
-}
+  }
+
 
 function deleteDog(dogId) {
   dogId = new mongo.ObjectID(dogId);
