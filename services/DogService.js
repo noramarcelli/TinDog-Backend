@@ -32,12 +32,12 @@ function getById(dogId) {
   });
 }
 
-function getNextDogs(likedId, userDogId) {
-  console.log({ likedId });
+function getNextDogs(prevId, userDogId) {
+  console.log({ prevId });
   var criteria = {};
-  if (likedId)
+  if (prevId)
     criteria._id = {
-      $gt: new mongo.ObjectID(likedId),
+      $gt: new mongo.ObjectID(prevId),
       $ne: new mongo.ObjectID(userDogId)
     };
   else criteria._id = { $ne: new mongo.ObjectID(userDogId) };
@@ -154,7 +154,7 @@ function getDogsLikes(userDogId){
 }
 
 function checkIfMatch(likedId, userDogId){
-    
+
 }
 
 module.exports = {
