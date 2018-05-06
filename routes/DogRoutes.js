@@ -72,4 +72,24 @@ module.exports = app => {
     .then(userDog => res.json(userDog))
     .catch(err => res.status(500).send("Could not add liked dog"));
   });
+
+  app.get(`${DOG_URL}/like/:userDogId`, (req, res) => {
+    const userDogId = req.params.userDogId;
+    DogService.getDogsLikes(userDogId)
+      .then(dogs => {
+        console.log('dogs', dogs);
+        
+        res.json(dogs);
+      })
+      .catch(err => res.status(500).send(err.message));
+  });
+
+  app.get(`${DOG_URL}/isMatch`, (req, res) => {
+    const likedId = req.query.likedId;
+    const userDogId = req.query.userDogId;
+
+    DogService.checkIfMatch(likedId, userDogId)
+    .then(match => res.json(match))
+    .catch(err => res.status(500).send("Could not check match"));
+  });
 };
