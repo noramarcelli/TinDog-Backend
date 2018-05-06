@@ -47,9 +47,9 @@ function getNextDogs(prevId, userDogId) {
         .collection("dog")
         .find(criteria)
         .limit(2)
-        .toArray((err, dog) => {
+        .toArray((err, dogs) => {
           if (err) reject(err);
-          else resolve(dog);
+          else resolve(dogs);
           db.close();
         });
     });
