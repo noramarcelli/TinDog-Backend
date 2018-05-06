@@ -29,7 +29,7 @@ module.exports = app => {
     console.log('userDogId', userDogId);
     
 
-    DogService.checkIfMatch(likedId, userDogId)
+    DogService.getMatchedDog(likedId, userDogId)
     .then(dog => res.json(dog))
     .catch(err => res.status(500).send("Could not check match"));
   });
@@ -80,8 +80,9 @@ module.exports = app => {
   app.post(`${DOG_URL}/like`, (req, res) => {
     const likedId = req.body.likedId;
     const userDogId = req.body.userDogId;
+    const userId = req.body.userId;
 
-    DogService.addLike(likedId, userDogId)
+    DogService.addLike(likedId, userDogId, userId)
     .then(userDog => res.json(userDog))
     .catch(err => res.status(500).send("Could not add liked dog"));
   });
