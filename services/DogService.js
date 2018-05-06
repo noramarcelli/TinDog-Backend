@@ -122,11 +122,13 @@ function _initCloudinary() {
 function addLike(likedId, userDogId) {
   return DBService.dbConnect()
     .then(db => {
-      return db.collection("dog").findOneAndUpdate(
-        { _id: new mongo.ObjectID(userDogId) },
-        { $push: { pendingLikesIds: likedId } },
-        { returnOriginal: false }
-      );
+      return db
+        .collection("dog")
+        .findOneAndUpdate(
+          { _id: new mongo.ObjectID(userDogId) },
+          { $push: { pendingLikesIds: likedId } },
+          { returnOriginal: false }
+        );
     })
     .then(res => {
       if (res.value) return res.value;
@@ -134,10 +136,9 @@ function addLike(likedId, userDogId) {
     });
 }
 
-function getDogsLikes(userDogId){
+function getDogsLikes(userDogId) {
   var criteria = { pendingLikesIds: userDogId };
-  console.log('criteria', criteria);
-  
+  console.log("criteria", criteria);
 
   return new Promise((resolve, reject) => {
     DBService.dbConnect().then(db => {
@@ -153,8 +154,24 @@ function getDogsLikes(userDogId){
   });
 }
 
-function checkIfMatch(likedId, userDogId){
+function checkIfMatch(likedId, userDogId) {
+  console.log('checkIfMatch');
+  console.log({likedId})
+  var _id = new mongo.ObjectID(likedId)
+  
+  var criteria = { $and: [{ _id },  {  pendingLikesIds: userDogId }] };
 
+  return new Promise((resolve, reject) => {
+    DBService.dbConnect().then(db => {
+      db.collection("dog").findOne( criteria, function(err, dog) {
+        console.log("dog in checkIfMatch", dog);
+        
+        if (err) reject(err);
+        else resolve(dog);
+        db.close();
+      });
+    });
+  });
 }
 
 module.exports = {
@@ -166,5 +183,6 @@ module.exports = {
   getNextDogs,
   uploadImg,
   addLike,
-  getDogsLikes
+  getDogsLikes,
+  checkIfMatch
 };

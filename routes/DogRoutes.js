@@ -21,6 +21,19 @@ module.exports = app => {
     .catch(err => res.status(500).send(err.message));
   });
   
+  app.get(`${DOG_URL}/isMatch`, (req, res) => {
+    const likedId = req.query.likedId;
+    const userDogId = req.query.userDogId;
+
+    console.log('likedId', likedId);
+    console.log('userDogId', userDogId);
+    
+
+    DogService.checkIfMatch(likedId, userDogId)
+    .then(dog => res.json(dog))
+    .catch(err => res.status(500).send("Could not check match"));
+  });
+  
   app.get(`${DOG_URL}/:dogId`, (req, res) => {
     const dogId = req.params.dogId;
     DogService.getById(dogId)
@@ -84,12 +97,5 @@ module.exports = app => {
       .catch(err => res.status(500).send(err.message));
   });
 
-  app.get(`${DOG_URL}/isMatch`, (req, res) => {
-    const likedId = req.query.likedId;
-    const userDogId = req.query.userDogId;
 
-    DogService.checkIfMatch(likedId, userDogId)
-    .then(match => res.json(match))
-    .catch(err => res.status(500).send("Could not check match"));
-  });
 };
