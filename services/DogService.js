@@ -41,7 +41,7 @@ function getNextDogs(prevId, userDogId){
     return new Promise((resolve, reject)=>{
         DBService.dbConnect()
         .then(db=>{
-            db.collection('dog').find(criteria).limit(2).toArray( (err, dog) => {
+            db.collection('dog').find(criteria).limit(2).toArray( (err, dogs) => {
                 if (err)    reject(err)
                 else        resolve(dogs);
                 db.close();
