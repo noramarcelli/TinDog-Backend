@@ -63,4 +63,13 @@ module.exports = app => {
       .then(response => res.json({url: response.url}))
       .catch(err => res.status(500).send("Could not add image"));
   });
+
+  app.post(`${DOG_URL}/like`, (req, res) => {
+    const likedId = req.body.likedId;
+    const userDogId = req.body.userDogId;
+
+    DogService.addLike(likedId, userDogId)
+    .then(userDog => res.json(userDog))
+    .catch(err => res.status(500).send("Could not add liked dog"));
+  });
 };

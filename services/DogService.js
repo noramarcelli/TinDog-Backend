@@ -115,6 +115,49 @@ function _initCloudinary(){
     }
 }
 
+function addLike(likedId, userDogId){
+    return new Promise((resolve, reject)=>{
+        DBService.dbConnect()
+        .then(db=>{
+            // db.collection('dog').insert(likedId, function (err, res) {
+            //     if (err)    reject(err)
+            //     else        resolve(likedId);
+            //     // else        resolve(res.ops[0]);
+            //     db.close();
+            // });
+
+            db.collection('dog').findOneAndUpdate(
+                { _id: userDogId },
+                { $push: { pendingLikesIds: likedId } },
+                { new: true },
+
+                function (err, documents) {
+                            res.send({ error: err, affected: documents });
+                            console.log('documents', documents);
+                            
+                            if (err)    reject(err)
+                            else        resolve(documents);
+                            db.close();
+                }
+        )
+
+        // collection.findOneAndUpdate(
+        //     { "code": req.body.code },
+        //     { $set: req.body.updatedFields },
+        //     { new: true },
+        //     function (err, documents) {
+        //         res.send({ error: err, affected: documents });
+        //         db.close();
+        //     }
+        // );
+    });
+})}
+
+// db.students.update(
+//     { _id: 1 },
+//     { $push: { scores: 89 } }
+//  )
+
 
 module.exports = {
     getDogs,
@@ -123,5 +166,6 @@ module.exports = {
     updateDog,
     addDog,
     getNextDogs,
-    uploadImg
+    uploadImg,
+    addLike
 }
