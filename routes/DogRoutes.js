@@ -3,21 +3,6 @@ var DogService = require("../services/DogService");
 var DOG_URL = "/dog";
 
 module.exports = app => {
-  // app.get("/dog", isLoggedIn, (req, res) => {
-  //   console.log("DOG: ", req.session);
-  //   DogService.query(req.session.user._id).then(dogs => {
-  //     console.log("DOGS: ", dogs);
-  //     res.json(dogs);
-  //   });
-  // });
-  // app.post("/dog", isLoggedIn, (req, res) => {
-  //   const dog = req.body;
-  //   dog.userId = req.session.user._id;
-  //   DogService.add(dog).then(addedDog => {
-  //     res.json(addedDog);
-  //   });
-  // });
-
   app.get(DOG_URL, (req, res) => {
     DogService.getDogs()
       .then(dogs => {
@@ -26,24 +11,15 @@ module.exports = app => {
       .catch(err => res.status(500).send(err.message));
   });
 
-  app.get(`${DOG_URL}/next/:prevId?`, (req, res) => {
-    const prevId = req.params.prevId;
-    DogService.getNextDogs(prevId)
+  app.get(`${DOG_URL}/next`, (req, res) => {
+    const prevId = req.query.prevId;
+    const userDogId = req.query.userDogId;
+    DogService.getNextDogs(prevId, userDogId)
     .then(dog => {
       res.json(dog);
     })
     .catch(err => res.status(500).send(err.message));
   });
-  
-  // app.get(`${DOG_URL}/next/:dogId?`, (req, res) => {
-  //   const dogId = req.params.dogId;
-  //   console.log({dogId})
-  //   DogService.getNextDog(dogId)
-  //   .then(dog => {
-  //     res.json(dog);
-  //   })
-  //   .catch(err => res.status(500).send(err.message));
-  // });
   
   app.get(`${DOG_URL}/:dogId`, (req, res) => {
     const dogId = req.params.dogId;
@@ -79,5 +55,21 @@ module.exports = app => {
     DogService.updateDog(dog)
       .then(dog => res.json(dog))
       .catch(err => res.status(500).send("Could not update dog"));
+  });
+
+  app.post(`${DOG_URL}/uploadImg`, (req, res) => {
+    const imgUrl = req.body.imgUrl;
+    DogService.uploadImg(imgUrl)
+      .then(response => res.json({url: response.url}))
+      .catch(err => res.status(500).send("Could not add image"));
+  });
+
+  app.post(`${DOG_URL}/like`, (req, res) => {
+    const likedId = req.body.likedId;
+    const userDogId = req.body.userDogId;
+
+    DogService.addLike(likedId, userDogId)
+    .then(userDog => res.json(userDog))
+    .catch(err => res.status(500).send("Could not add liked dog"));
   });
 };

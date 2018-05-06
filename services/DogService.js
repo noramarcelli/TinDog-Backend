@@ -1,7 +1,8 @@
 const mongo = require('mongodb');
 const DBService = require('./DBService');
-
+var cloudinary = require('cloudinary');
 var MongoClient = mongo.MongoClient;
+var cloudinaryIsInit = false;
 
 function getDogs() {
     return new Promise((resolve, reject)=>{
@@ -18,7 +19,6 @@ function getDogs() {
 }
 
 function getById(dogId) {
-
     dogId = new mongo.ObjectID(dogId);
     return new Promise((resolve, reject)=>{
         DBService.dbConnect()
@@ -33,30 +33,19 @@ function getById(dogId) {
 }
 
 
-// function getNextDog(curId){
-//     console.log({curId})
-//     var criteria = {}
-//     if (curId) criteria._id = {$gt: new mongo.ObjectID(curId)}
-//     return new Promise((resolve, reject)=>{
-//         DBService.dbConnect()
-//         .then(db=>{
-//             db.collection('dog').find(criteria).sort({_id: 1 }).limit(1).toArray( (err, dog) => {
-//                 if (err)    reject(err)
-//                 else        resolve(dog);
-//                 db.close();
-//             });
-//         })
-//     });
-// }
-
-function getNextDogs(prevId){
+function getNextDogs(prevId, userDogId){
     console.log({prevId})
     var criteria = {}
-    if (prevId) criteria._id = {$gt: new mongo.ObjectID(prevId)}
+    if (prevId) criteria._id = {  $gt: new mongo.ObjectID(prevId) ,  $ne: new mongo.ObjectID(userDogId)}
+    else criteria._id = { $ne: new mongo.ObjectID(userDogId) }
     return new Promise((resolve, reject)=>{
         DBService.dbConnect()
         .then(db=>{
+<<<<<<< HEAD
             db.collection('dog').find(criteria).sort({_id: 1 }).limit(2).toArray( (err, dogs) => {
+=======
+            db.collection('dog').find(criteria).limit(2).toArray( (err, dog) => {
+>>>>>>> 037210ff8b3d440a8c933ae013081860490355cf
                 if (err)    reject(err)
                 else        resolve(dogs);
                 db.close();
@@ -107,6 +96,72 @@ function updateDog(dog) {
     });
 }
 
+function uploadImg(imgUrl) {
+    _initCloudinary();
+
+    return new Promise((resolve, reject)=>{
+    cloudinary.v2.uploader.upload(imgUrl, (err, res) => {
+        console.log('res', res);
+        if (err)    reject(err)
+        else        resolve(res);
+    });
+   });
+}
+
+function _initCloudinary(){
+    if(!cloudinaryIsInit) {
+        cloudinary.config({
+            cloud_name: 'ilanamost',
+            api_key: '126843244928435',
+            api_secret: 'Pn9z1wRYWbHXb_lAX_zM5QTAUJY'
+        });
+        cloudinaryIsInit = true;
+    }
+}
+
+function addLike(likedId, userDogId){
+    return new Promise((resolve, reject)=>{
+        DBService.dbConnect()
+        .then(db=>{
+            // db.collection('dog').insert(likedId, function (err, res) {
+            //     if (err)    reject(err)
+            //     else        resolve(likedId);
+            //     // else        resolve(res.ops[0]);
+            //     db.close();
+            // });
+
+            db.collection('dog').findOneAndUpdate(
+                { _id: userDogId },
+                { $push: { pendingLikesIds: likedId } },
+                { new: true },
+
+                function (err, documents) {
+                            res.send({ error: err, affected: documents });
+                            console.log('documents', documents);
+                            
+                            if (err)    reject(err)
+                            else        resolve(documents);
+                            db.close();
+                }
+        )
+
+        // collection.findOneAndUpdate(
+        //     { "code": req.body.code },
+        //     { $set: req.body.updatedFields },
+        //     { new: true },
+        //     function (err, documents) {
+        //         res.send({ error: err, affected: documents });
+        //         db.close();
+        //     }
+        // );
+    });
+})}
+
+// db.students.update(
+//     { _id: 1 },
+//     { $push: { scores: 89 } }
+//  )
+
 
 module.exports = {
     getDogs,
@@ -114,6 +169,7 @@ module.exports = {
     deleteDog,
     updateDog,
     addDog,
-    // getNextDog,
-    getNextDogs
+    getNextDogs,
+    uploadImg,
+    addLike
 }
