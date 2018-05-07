@@ -152,6 +152,8 @@ function addLike(likedId, userDogId, userId) {
       if (res.value) {
         return _getMatchedDog(likedId, userDogId)
         .then(matchedDog => {
+          console.log('matchedDog in _getMatchedDog promise result', matchedDog);
+          
           return _createMatch(userId, matchedDog.userId, userDogId, likedId)
           .then(matchId => {
             console.log('match made!!!, matchId:', matchId)
