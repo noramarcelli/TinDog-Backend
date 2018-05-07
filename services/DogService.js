@@ -150,7 +150,8 @@ function addLike(likedId, userDogId, userId) {
     })
     .then(res => {
       if (res.value) {
-        return _getMatchedDog(likedId, userDogId)
+        // return _getMatchedDog(likedId, userDogId)
+        _getMatchedDog(likedId, userDogId)
         .then(matchedDog => {
           console.log('matchedDog in _getMatchedDog promise result', matchedDog);
           
