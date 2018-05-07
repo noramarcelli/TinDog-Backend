@@ -311,9 +311,10 @@ function _addMatch(userId, likedDogUserId, userDogId, likedId) {
     return DBService.dbConnect().then(db => {
       return db.collection('match').insertOne(match)
       .then(res => {
-        console.log('res.insertedId', res.insertedId);
+        console.log('res.insertedId in _addMatch', res.ops[0]);
         
-        return res.insertedId;
+        return res.ops[0];
+        // return res.insertedId;
       })
 
       // , function(err, match) {

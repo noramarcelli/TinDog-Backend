@@ -26,10 +26,10 @@ function init(http) {
 
     socket.on('likedDog', ({ dogId, userDogId, userId, dogUserId }) => {
       DogService.addLike(dogId, userDogId, userId)
-      .then(matchId => {
-        if (matchId) {
-          io.to(dogUserId).emit('matched', matchId)
-          socket.emit('matched', matchId)
+      .then(match => {
+        if (match) {
+          io.to(dogUserId).emit('matched', match)
+          socket.emit('matched', match)
         }
       })
     })
