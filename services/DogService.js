@@ -173,11 +173,37 @@ function addLike(likedId, userDogId, userId) {
 function _createMatch(userId, likedDogUserId, userDogId, likedId) {
   return new Promise((resolve, reject) => {
     _addMatch(userId, likedDogUserId, userDogId, likedId);
-    // _addMatchToUserDog(likedId, userDogId);
-    // _addMatchToLikedDog(likedId, userDogId);
+    _addMatchToUserDog(likedId, userDogId);
+    _addMatchToLikedDog(likedId, userDogId);
     if (err) reject(err);
     else resolve();
   });
+}
+
+function _addMatchToUserDog(likedId, userDogId){
+  return DBService.dbConnect()
+    .then(db => {
+      return db
+        .collection("dog")
+        .findOneAndUpdate(
+          { _id: new mongo.ObjectID(userDogId) },
+          { $push: { matches: likedId, isRead: false } },
+          { returnOriginal: false }
+        );
+    })
+}
+
+function _addMatchToLikedDog(likedId, userDogId){
+  return DBService.dbConnect()
+  .then(db => {
+    return db
+      .collection("dog")
+      .findOneAndUpdate(
+        { _id: new mongo.ObjectID(likedId) },
+        { $push: { matches: userDogId, isRead: false } },
+        { returnOriginal: false }
+      );
+  })
 }
 
 // function _createMatch(userId, likedDogUserId, userDogId, likedId) {
