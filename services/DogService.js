@@ -160,6 +160,9 @@ function addLike(likedId, userDogId, userId) {
           return _createMatch(userId, matchedDog.userId, userDogId, likedId)
           .then(matchId => {
             console.log('match made!!!, matchId:', matchId)
+            console.log('matchedDog inside createMatch', matchedDog);
+            
+            this.$socket.emit('newMatch', matchedDog);
             return matchId
           }).catch((err) => {reject(err)});
         });
@@ -354,7 +357,11 @@ function _getMatchedDog(likedId, userDogId) {
         if (err) reject(err);
         // else if (dog === null) reject('No match yet...');
         else {
-          if(dog !== null) resolve(dog);
+          if(dog !== null)
+          {
+            // this.$socket.emit('newMatch', matchedDog);
+            resolve(dog);
+          } 
         };
         db.close();
       });
