@@ -154,6 +154,8 @@ function addLike(likedId, userDogId, userId) {
         _getMatchedDog(likedId, userDogId)
         .then(matchedDog => {
           console.log('matchedDog in _getMatchedDog promise result', matchedDog);
+
+          // this.$socket.emit('newMatch', matchedDog);
           
           return _createMatch(userId, matchedDog.userId, userDogId, likedId)
           .then(matchId => {
@@ -350,8 +352,10 @@ function _getMatchedDog(likedId, userDogId) {
         console.log("dog in getMatchedDog", dog);
 
         if (err) reject(err);
-        else if (dog === null) reject('No match yet...');
-        else resolve(dog);
+        // else if (dog === null) reject('No match yet...');
+        else {
+          if(dog !== null) resolve(dog);
+        };
         db.close();
       });
     });
