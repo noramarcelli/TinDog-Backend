@@ -10,10 +10,28 @@ function init(http) {
   const io = socketIo(http);
   io.on("connection", socket => {
     var user;
+    setTimeout(() => {
+      console.log('before emit')
+      io.emit('chenAviv')
+      console.log('after emit')
+      
+    }, 1000)
+    // socket.emit('chenAviv')
 
     socket.on('userLoggedIn', userDetails => {
       user = userDetails;
+      socket.join(user._id)
       console.log('user was logged in and details are in socket:', user)
+    })
+
+    socket.on('likedDog', ({ dogId, userDogId, userId, dogUserId }) => {
+      DogService.addLike(dogId, userDogId, userId)
+      .then(matchId => {
+        if (matchId) {
+          io.to(dogUserId).emit('matched', matchId)
+          socket.emit('matched', matchId)
+        }
+      })
     })
 
 
