@@ -153,16 +153,9 @@ function addLike(likedId, userDogId, userId) {
         _getMatchedDog(likedId, userDogId).then(matchedDog => {
           _createMatch(userId, matchedDog.userId, userDogId, likedId).then(
             () => {
-              // return res.value;
-        
-              
               console.log(' _createMatch');
-              
             }
           );
-          // return res.value;
-          // }).then(() => {
-          //   // return res.value;
         });
         return res.value;
       }
@@ -172,11 +165,45 @@ function addLike(likedId, userDogId, userId) {
 
 function _createMatch(userId, likedDogUserId, userDogId, likedId) {
   return new Promise((resolve, reject) => {
+    // _deleteFromLikes(userDogId, likedId);
     _addMatch(userId, likedDogUserId, userDogId, likedId);
     _addMatchToUserDog(likedId, userDogId);
     _addMatchToLikedDog(likedId, userDogId);
+    _deleteFromLikes(userDogId, likedId);
     if (err) reject(err);
     else resolve();
+  });
+}
+
+function _deleteFromLikes(userDogId, likedId){
+  _deleteFromuserDog(userDogId, likedId);
+  _deleteFromLikedDog(userDogId, likedId);
+}
+
+
+function _deleteFromuserDog(userDogId, likedId){
+  DBService.dbConnect().then(db => {
+    db.collection("dog").findOneAndUpdate(
+      {  _id: new mongo.ObjectID(userDogId)} , 
+      { $pull: { pendingLikesIds: likedId } },
+      function(err, res) {
+          if (err) reject(err);
+          else resolve();
+          db.close();
+        });
+  });
+}
+
+function  _deleteFromLikedDog(userDogId, likedId){
+  DBService.dbConnect().then(db => {
+    db.collection("dog").findOneAndUpdate(
+      {  _id: new mongo.ObjectID(likedId)} , 
+      { $pull: { pendingLikesIds: userDogId } },
+      function(err, res) {
+          if (err) reject(err);
+          else resolve();
+          db.close();
+        });
   });
 }
 
@@ -187,7 +214,7 @@ function _addMatchToUserDog(likedId, userDogId){
         .collection("dog")
         .findOneAndUpdate(
           { _id: new mongo.ObjectID(userDogId) },
-          { $push: { matches: likedId, isRead: false } },
+          { $push: { matches: {likedId, isRead: false} } },
           { returnOriginal: false }
         );
     })
@@ -200,7 +227,7 @@ function _addMatchToLikedDog(likedId, userDogId){
       .collection("dog")
       .findOneAndUpdate(
         { _id: new mongo.ObjectID(likedId) },
-        { $push: { matches: userDogId, isRead: false } },
+        { $push: { matches: {userDogId, isRead: false} } },
         { returnOriginal: false }
       );
   })
