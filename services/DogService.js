@@ -137,6 +137,7 @@ function _initCloudinary() {
 // }
 
 function addLike(likedId, userDogId, userId) {
+  console.log('userId inside addLike', userId);
   return DBService.dbConnect()
     .then(db => {
       return db
@@ -153,6 +154,8 @@ function addLike(likedId, userDogId, userId) {
           _createMatch(userId, matchedDog.userId, userDogId, likedId).then(
             () => {
               // return res.value;
+        
+              
               console.log(' _createMatch');
               
             }
@@ -169,19 +172,29 @@ function addLike(likedId, userDogId, userId) {
 
 function _createMatch(userId, likedDogUserId, userDogId, likedId) {
   return new Promise((resolve, reject) => {
-    _addMatch(userId, likedDogUserId, userDogId, likedId)
-      .then(() => {
-        resolve();
-      })
-      .catch(err => {
-        reject(err);
-      });
+    _addMatch(userId, likedDogUserId, userDogId, likedId);
     // _addMatchToUserDog(likedId, userDogId);
     // _addMatchToLikedDog(likedId, userDogId);
-    // if (err) reject(err);
-    // else resolve();
+    if (err) reject(err);
+    else resolve();
   });
 }
+
+// function _createMatch(userId, likedDogUserId, userDogId, likedId) {
+//   return new Promise((resolve, reject) => {
+//     _addMatch(userId, likedDogUserId, userDogId, likedId)
+//       .then(() => {
+//         resolve();
+//       })
+//       .catch(err => {
+//         reject(err);
+//       });
+//     // _addMatchToUserDog(likedId, userDogId);
+//     // _addMatchToLikedDog(likedId, userDogId);
+//     // if (err) reject(err);
+//     // else resolve();
+//   });
+// }
 
 function _addMatch(userId, likedDogUserId, userDogId, likedId) {
   return new Promise((resolve, reject) => {
