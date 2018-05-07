@@ -165,7 +165,6 @@ function addLike(likedId, userDogId, userId) {
 
 function _createMatch(userId, likedDogUserId, userDogId, likedId) {
   return new Promise((resolve, reject) => {
-    // _deleteFromLikes(userDogId, likedId);
     _addMatch(userId, likedDogUserId, userDogId, likedId);
     _addMatchToUserDog(likedId, userDogId);
     _addMatchToLikedDog(likedId, userDogId);
@@ -176,36 +175,34 @@ function _createMatch(userId, likedDogUserId, userDogId, likedId) {
 }
 
 function _deleteFromLikes(userDogId, likedId){
-  _deleteFromuserDog(userDogId, likedId);
-  _deleteFromLikedDog(userDogId, likedId);
+  _deleteFromDog(userDogId, likedId);
+  _deleteFromDog( likedId, userDogId);
 }
 
 
-function _deleteFromuserDog(userDogId, likedId){
+function _deleteFromDog(firstDogId, secondDogId){
   DBService.dbConnect().then(db => {
     db.collection("dog").findOneAndUpdate(
-      {  _id: new mongo.ObjectID(userDogId)} , 
-      { $pull: { pendingLikesIds: likedId } },
+      {  _id: new mongo.ObjectID(firstDogId)} , 
+      { $pull: { pendingLikesIds: secondDogId } },
       function(err, res) {
-          if (err) reject(err);
-          else resolve();
+          if (err) throw new Error('Failed to delete like from user\'s dog');
           db.close();
         });
   });
 }
 
-function  _deleteFromLikedDog(userDogId, likedId){
-  DBService.dbConnect().then(db => {
-    db.collection("dog").findOneAndUpdate(
-      {  _id: new mongo.ObjectID(likedId)} , 
-      { $pull: { pendingLikesIds: userDogId } },
-      function(err, res) {
-          if (err) reject(err);
-          else resolve();
-          db.close();
-        });
-  });
-}
+// function  _deleteFromLikedDog(userDogId, likedId){
+//   DBService.dbConnect().then(db => {
+//     db.collection("dog").findOneAndUpdate(
+//       {  _id: new mongo.ObjectID(likedId)} , 
+//       { $pull: { pendingLikesIds: userDogId } },
+//       function(err, res) {
+//           if (err) throw new Error('Failed to delete like from user\'s dog');
+//           db.close();
+//         });
+//   });
+// }
 
 function _addMatchToUserDog(likedId, userDogId){
   return DBService.dbConnect()
