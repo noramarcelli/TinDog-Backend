@@ -154,8 +154,9 @@ function addLike(likedId, userDogId, userId) {
           _createMatch(userId, matchedDog.userId, userDogId, likedId).then(
             () => {
               console.log(' _createMatch');
+              resolve();
             }
-          );
+          ).catch((err) => {reject(err)});
         });
         return res.value;
       }
@@ -165,12 +166,28 @@ function addLike(likedId, userDogId, userId) {
 
 function _createMatch(userId, likedDogUserId, userDogId, likedId) {
   return new Promise((resolve, reject) => {
-    _addMatch(userId, likedDogUserId, userDogId, likedId);
-    _addMatchToUserDog(likedId, userDogId);
-    _addMatchToLikedDog(likedId, userDogId);
+    // _addMatch(userId, likedDogUserId, userDogId, likedId).then(matchId => {
+    //   console.log('matchId', matchId);
+      
+    //   _addToMatches(userDogId, likedId, matchId);
+    // })
+
+    _addMatch(userId, likedDogUserId, userDogId, likedId).then((matchId) => {
+      console.log('matchId', matchId);
+      
+      _addToMatches(userDogId, likedId, matchId);
+    })
+
+
+    // _addMatchToUserDog(likedId, userDogId);
+    // _addMatchToLikedDog(likedId, userDogId);
+
+    // _addMatchToDog(userDogId, likedId);
+    // _addMatchToDog( likedId, userDogId);
+    // _addToMatches(userDogId, likedId);
     _deleteFromLikes(userDogId, likedId);
-    if (err) reject(err);
-    else resolve();
+    // if (err) reject(err);
+    // else resolve();
   });
 }
 
@@ -204,31 +221,50 @@ function _deleteFromDog(firstDogId, secondDogId){
 //   });
 // }
 
-function _addMatchToUserDog(likedId, userDogId){
+function _addToMatches(userDogId, likedId, matchId){
+    _addMatchToDog(userDogId, matchId);
+    _addMatchToDog(likedId, matchId);
+}
+
+
+function _addMatchToDog(dogId, matchId){
   return DBService.dbConnect()
     .then(db => {
       return db
         .collection("dog")
         .findOneAndUpdate(
-          { _id: new mongo.ObjectID(userDogId) },
-          { $push: { matches: {likedId, isRead: false} } },
+          { _id: new mongo.ObjectID(dogId) },
+          { $push: { matches: {matchId, isRead: false} } },
           { returnOriginal: false }
         );
     })
 }
 
-function _addMatchToLikedDog(likedId, userDogId){
-  return DBService.dbConnect()
-  .then(db => {
-    return db
-      .collection("dog")
-      .findOneAndUpdate(
-        { _id: new mongo.ObjectID(likedId) },
-        { $push: { matches: {userDogId, isRead: false} } },
-        { returnOriginal: false }
-      );
-  })
-}
+// function _addMatchToUserDog(likedId, userDogId){
+//   return DBService.dbConnect()
+//     .then(db => {
+//       return db
+//         .collection("dog")
+//         .findOneAndUpdate(
+//           { _id: new mongo.ObjectID(userDogId) },
+//           { $push: { matches: {likedId, isRead: false} } },
+//           { returnOriginal: false }
+//         );
+//     })
+// }
+
+// function _addMatchToLikedDog(likedId, userDogId){
+//   return DBService.dbConnect()
+//   .then(db => {
+//     return db
+//       .collection("dog")
+//       .findOneAndUpdate(
+//         { _id: new mongo.ObjectID(likedId) },
+//         { $push: { matches: {userDogId, isRead: false} } },
+//         { returnOriginal: false }
+//       );
+//   })
+// }
 
 // function _createMatch(userId, likedDogUserId, userDogId, likedId) {
 //   return new Promise((resolve, reject) => {
@@ -247,7 +283,6 @@ function _addMatchToLikedDog(likedId, userDogId){
 // }
 
 function _addMatch(userId, likedDogUserId, userDogId, likedId) {
-  return new Promise((resolve, reject) => {
     var match = {
       firstLikerId: userId,
       secondLikerId: likedDogUserId,
@@ -255,15 +290,21 @@ function _addMatch(userId, likedDogUserId, userDogId, likedId) {
       secondDogId: likedId
     };
 
-    DBService.dbConnect().then(db => {
-      db.collection("match").insert(match, function(err, res) {
-        console.log("inside _addMatch");
-        if (err) reject(err);
-        else resolve();
-        db.close();
-      });
+    return DBService.dbConnect().then(db => {
+      return db.collection('match').insertOne(match)
+      .then(res => {
+        console.log('res.insertedId', res.insertedId);
+        
+        return res.insertedId;
+      })
+
+      // , function(err, match) {
+      //   console.log("inside _addMatch");
+      //   if (err) reject(err);
+      //   else resolve();
+      //   db.close();
+      // });
     });
-  });
 }
 
 function getDogsLikes(userDogId) {
@@ -297,6 +338,7 @@ function _getMatchedDog(likedId, userDogId) {
         console.log("dog in getMatchedDog", dog);
 
         if (err) reject(err);
+        else if (dog === null) reject('No match yet...');
         else resolve(dog);
         db.close();
       });
