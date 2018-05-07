@@ -83,7 +83,7 @@ module.exports = app => {
     const userId = req.body.userId;
 
     DogService.addLike(likedId, userDogId, userId)
-    .then(userDog => res.json(userDog))
+    .then(matchId => res.json(matchId))
     .catch(err => res.status(500).send("Could not add liked dog"));
   });
 
