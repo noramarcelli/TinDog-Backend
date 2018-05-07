@@ -32,13 +32,8 @@ function getById(dogId) {
   });
 }
 
-<<<<<<< HEAD
-function getNextDogs(likedId, userDogId) {
-  console.log({ likedId });
-=======
 function getNextDogs(prevId, userDogId) {
   console.log({ prevId });
->>>>>>> c704b4bdd5810bd9733fc44da9e46c03fd9b03d6
   var criteria = {};
   if (prevId)
     criteria._id = {
