@@ -38,46 +38,71 @@ function getById(dogId) {
 // b.inventory.find( { qty: { $nin: [ 5, 15 ] } } )
 function getNextDogs(prevId, userDogId) {
   console.log({ prevId });
+  // let condition1 = {$nor: [{matches: { $elemMatch: {"match.firstDogId": userDogId}}},
+  //                   {matches: { $elemMatch: {"match.secondDogId": userDogId}}}]}
+  var criteria = {_id: {$ne: userDogId}};
+  if (prevId) criteria._id.$gt = prevId;
 
-  getById(userDogId).then((dog) => {
+  return getById(userDogId).then((dog) => {
     console.log('userDogId', userDogId);
-    console.log('dog.matches', dog.matches);
+    // console.log('dog.matches', dog.matches[0]);
+
+    var matchedDogIds = [];
+    if(dog.matches){
+    matchedDogIds = dog.matches.map(({match}) => {
+      let matchedDogId = match.firstDogId !== dog._id? match.firstDogId : match.secondDogId;
+      return matchedDogId;
+    })
+  }
     
-    // dog.matches.forEach((match) => {
-    //   console.log('match', match);
-      
-    // })
+    return matchedDogIds;
+  }).then(matchedDogIds => {
+    criteria._id.$nin = matchedDogIds;
+    console.log({criteria})
+  }).then(() => {
+    return new Promise((resolve, reject) => {
+      DBService.dbConnect().then(db => {
+        db
+          .collection("dog")
+          .find(criteria)
+          .limit(2)
+          .toArray((err, dogs) => {
+            if (err) reject(err);
+            else resolve(dogs);
+            db.close();
+          });
+      });
   })
 
-  var criteria = {};
-  if (prevId)
-    // criteria._id = {
-    //   // $gt: new mongo.ObjectID(prevId),
-    //   // $ne: new mongo.ObjectID(userDogId)
-    //   $gt: prevId,
-    //   $ne: userDogId
-    // };
+  
+  // if (prevId)
+  //   // criteria._id = {
+  //   //   // $gt: new mongo.ObjectID(prevId),
+  //   //   // $ne: new mongo.ObjectID(userDogId)
+  //   //   $gt: prevId,
+  //   //   $ne: userDogId
+  //   // };
 
-    criteria._id = {
-      // $gt: new mongo.ObjectID(prevId),
-      // $ne: new mongo.ObjectID(userDogId)
-      $gt: prevId,
-      $ne: userDogId
-    };
+  //   criteria._id = {
+  //     // $gt: new mongo.ObjectID(prevId),
+  //     // $ne: new mongo.ObjectID(userDogId)
+  //     $gt: prevId,
+  //     $ne: userDogId
+  //   };
   // else criteria._id = { $ne: new mongo.ObjectID(userDogId) };
-  else criteria._id = { $ne: userDogId };
-  return new Promise((resolve, reject) => {
-    DBService.dbConnect().then(db => {
-      db
-        .collection("dog")
-        .find(criteria)
-        .limit(2)
-        .toArray((err, dogs) => {
-          if (err) reject(err);
-          else resolve(dogs);
-          db.close();
-        });
-    });
+  // else criteria._id = { $ne: userDogId };
+  // return new Promise((resolve, reject) => {
+  //   DBService.dbConnect().then(db => {
+  //     db
+  //       .collection("dog")
+  //       .find(criteria)
+  //       .limit(2)
+  //       .toArray((err, dogs) => {
+  //         if (err) reject(err);
+  //         else resolve(dogs);
+  //         db.close();
+  //       });
+  //   });
   });
 }
 
@@ -189,14 +214,14 @@ function addLike(likedId, userDogId, userId) {
 
 function _createMatch(userId, likedDogUserId, userDogId, likedId) {
     return _addMatch(userId, likedDogUserId, userDogId, likedId)
-    .then(matchId => {
+    .then(match => {
       // console.log('matchId in createMatch', matchId);
 
-      return _addToMatches(userDogId, likedId, matchId)
+      return _addToMatches(userDogId, likedId, match)
       .then(() => {
         return _deleteFromLikes(userDogId, likedId)
       })
-      .then(() => matchId)
+      .then(() => match)
   });
 }
 
@@ -221,15 +246,15 @@ function _deleteFromDog(firstDogId, secondDogId){
   });
 }
 
-function _addToMatches(userDogId, likedId, matchId){
+function _addToMatches(userDogId, likedId, match){
     var addedMatchesPrms = [];
-    addedMatchesPrms.push(_addMatchToDog(userDogId, matchId));
-    addedMatchesPrms.push(_addMatchToDog(likedId, matchId));
+    addedMatchesPrms.push(_addMatchToDog(userDogId, match));
+    addedMatchesPrms.push(_addMatchToDog(likedId, match));
     return Promise.all(addedMatchesPrms);
 }
 
 
-function _addMatchToDog(dogId, matchId){
+function _addMatchToDog(dogId, match){
   return DBService.dbConnect()
     .then(db => {
       return db
@@ -237,7 +262,7 @@ function _addMatchToDog(dogId, matchId){
         .findOneAndUpdate(
           // { _id: new mongo.ObjectID(dogId) },
           { _id: dogId },
-          { $push: { matches: {matchId, isRead: false} } },
+          { $push: { matches: {match, isRead: false} } },
           { returnOriginal: false }
         );
     })
