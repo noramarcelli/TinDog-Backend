@@ -20,11 +20,13 @@ function getDogs() {
 }
 
 function getById(dogId) {
-  console.log({dogId})
-  dogId = new mongo.ObjectID(dogId);
+  console.log('dogId:', {dogId})
+  // dogId = new mongo.ObjectID(dogId);
   return new Promise((resolve, reject) => {
     DBService.dbConnect().then(db => {
       db.collection("dog").findOne({ _id: dogId }, function(err, dog) {
+        console.log('dog', {dog});
+        
         if (err) reject(err);
         else resolve(dog);
         db.close();
