@@ -40,10 +40,13 @@ function getNextDogs(prevId, userDogId) {
   var criteria = {};
   if (prevId)
     criteria._id = {
-      $gt: new mongo.ObjectID(prevId),
-      $ne: new mongo.ObjectID(userDogId)
+      // $gt: new mongo.ObjectID(prevId),
+      // $ne: new mongo.ObjectID(userDogId)
+      $gt: prevId,
+      $ne: userDogId
     };
-  else criteria._id = { $ne: new mongo.ObjectID(userDogId) };
+  // else criteria._id = { $ne: new mongo.ObjectID(userDogId) };
+  else criteria._id = { $ne: userDogId };
   return new Promise((resolve, reject) => {
     DBService.dbConnect().then(db => {
       db
