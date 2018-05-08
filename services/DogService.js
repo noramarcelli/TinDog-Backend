@@ -382,5 +382,4 @@ module.exports = {
   uploadImg,
   addLike,
   getDogsLikes
-  // getMatchedDog
 };

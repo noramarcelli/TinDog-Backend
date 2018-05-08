@@ -47,6 +47,8 @@ const addUserRoutes = require('./routes/UserRoutes.js')
 addUserRoutes(app)
 const addDogRoutes = require('./routes/DogRoutes.js')
 addDogRoutes(app)
+const addMatchRoutes = require('./routes/MatchRoutes.js')
+addMatchRoutes(app)
 
 http.listen(3000, () => {
   console.log('listening on *:3000');
