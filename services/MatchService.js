@@ -4,7 +4,6 @@ var MongoClient = mongo.MongoClient;
 
 function getDogMatches(userDogId) {
     var _id = new mongo.ObjectID(userDogId);
-    // var criteria = { $or: [{firstDogId: userDogId}, {secondDogId: userDogId} ]};
     var criteria = { $or: [{firstDogId: userDogId}, {secondDogId: userDogId} ] };
   
     return new Promise((resolve, reject) => {
