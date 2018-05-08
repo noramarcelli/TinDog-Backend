@@ -13,4 +13,8 @@ module.exports = app => {
       .catch(err => res.status(500).send(err.message));
   });
 
+  // app.get(`${MATCH_URL}/:matchId`, (req, res) => {
+
+  // })
+
 };
