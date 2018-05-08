@@ -142,12 +142,12 @@ function addLike(likedId, userDogId, userId) {
           // this.$socket.emit('newMatch', matchedDog);
           
           return _createMatch(userId, matchedDog.userId, userDogId, likedId)
-          .then(matchId => {
-            console.log('match made!!!, matchId:', matchId)
+          .then(match => {
+            console.log('match made!!!, match:', match)
             console.log('matchedDog inside createMatch', matchedDog);
             
             // this.$socket.emit('newMatch', matchedDog);
-            return matchId
+            return match
           }).catch((err) => {reject(err)});
         });
         // return res.value;
@@ -162,7 +162,7 @@ function addLike(likedId, userDogId, userId) {
 function _createMatch(userId, likedDogUserId, userDogId, likedId) {
     return _addMatch(userId, likedDogUserId, userDogId, likedId)
     .then(matchId => {
-      console.log('matchId', matchId);
+      // console.log('matchId in createMatch', matchId);
 
       return _addToMatches(userDogId, likedId, matchId)
       .then(() => {
