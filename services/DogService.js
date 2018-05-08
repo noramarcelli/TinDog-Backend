@@ -35,10 +35,29 @@ function getById(dogId) {
   });
 }
 
+// b.inventory.find( { qty: { $nin: [ 5, 15 ] } } )
 function getNextDogs(prevId, userDogId) {
   console.log({ prevId });
+
+  getById(userDogId).then((dog) => {
+    console.log('userDogId', userDogId);
+    console.log('dog.matches', dog.matches);
+    
+    // dog.matches.forEach((match) => {
+    //   console.log('match', match);
+      
+    // })
+  })
+
   var criteria = {};
   if (prevId)
+    // criteria._id = {
+    //   // $gt: new mongo.ObjectID(prevId),
+    //   // $ne: new mongo.ObjectID(userDogId)
+    //   $gt: prevId,
+    //   $ne: userDogId
+    // };
+
     criteria._id = {
       // $gt: new mongo.ObjectID(prevId),
       // $ne: new mongo.ObjectID(userDogId)
@@ -63,7 +82,8 @@ function getNextDogs(prevId, userDogId) {
 }
 
 function deleteDog(dogId) {
-  dogId = new mongo.ObjectID(dogId);
+  // dogId = new mongo.ObjectID(dogId);
+  dogId = dogId;
   return new Promise((resolve, reject) => {
     DBService.dbConnect().then(db => {
       db.collection("dog").deleteOne({ _id: dogId }, function(err, res) {
@@ -235,17 +255,8 @@ function _addMatch(userId, likedDogUserId, userDogId, likedId) {
       return db.collection('match').insertOne(match)
       .then(res => {
         console.log('res.insertedId in _addMatch', res.ops[0]);
-        
         return res.ops[0];
-        // return res.insertedId;
       })
-
-      // , function(err, match) {
-      //   console.log("inside _addMatch");
-      //   if (err) reject(err);
-      //   else resolve();
-      //   db.close();
-      // });
     });
 }
 
@@ -281,14 +292,6 @@ function _getMatchedDog(likedId, userDogId) {
         console.log("dog in getMatchedDog", dog);
 
         if (err) reject(err);
-        // else if (dog === null) reject('No match yet...');
-        // else {
-        //   if(dog !== null)
-        //   {
-        //     // this.$socket.emit('newMatch', matchedDog);
-        //     resolve(dog);
-        //   } 
-        // };
         else resolve(dog)
         db.close();
       });
