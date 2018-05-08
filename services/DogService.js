@@ -20,6 +20,7 @@ function getDogs() {
 }
 
 function getById(dogId) {
+  console.log({dogId})
   dogId = new mongo.ObjectID(dogId);
   return new Promise((resolve, reject) => {
     DBService.dbConnect().then(db => {
