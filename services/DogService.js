@@ -149,9 +149,11 @@ function updateDog(dog) {
 }
 
 function uploadImg(imgUrl) {
+  // console.log('uploadImg inside backend service');
   _initCloudinary();
 
   return new Promise((resolve, reject) => {
+    console.log('uploadImg inside backend service');
     cloudinary.v2.uploader.upload(imgUrl, (err, res) => {
       console.log("res", res);
       if (err) reject(err);
