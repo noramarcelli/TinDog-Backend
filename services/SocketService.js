@@ -1,5 +1,6 @@
 const UserService = require('./UserService.js');
 const DogService = require('./DogService.js');
+const MatchService = require('./MatchService.js');
 
 var socketIo = require("socket.io");
 
@@ -35,17 +36,20 @@ function init(http) {
       })
     })
 
-    socket.on('newMsg', (txt) => {
-      // MatchService.addNewMsg()
-      // .then ()
-      socket.to(roomName).emit('newMsg', txt)
-    })
-
     socket.on('chatRequest', data => {
       socket.leave(roomName);
       roomName = data.roomName;
       socket.join(data.roomName);
       io.to(data.roomName).emit('newChatMember', data.username)
+    })
+
+    socket.on('newMsg', msg => {
+      MatchService.addMsgToMatch(roomName, msg)
+      .then(res => {
+        io.to(roomName).emit('newMsg', {msg, matchId: roomName})
+      })
+
+      // socket.in(roomName).emit('newMsg', msg)
     })
 
 
