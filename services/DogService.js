@@ -241,7 +241,8 @@ function _addMatch(userId, likedDogUserId, userDogId, likedId) {
     firstLikerId: userId,
     secondLikerId: likedDogUserId,
     firstDogId: userDogId,
-    secondDogId: likedId
+    secondDogId: likedId,
+    messages: []
   };
 
   return DBService.dbConnect().then(db => {

@@ -3,7 +3,6 @@ const DBService = require("./DBService");
 var MongoClient = mongo.MongoClient;
 
 function getDogMatches(userDogId) {
-    // var _id = new mongo.ObjectID(userDogId);
     var _id = userDogId;
     var criteria = { $or: [{firstDogId: userDogId}, {secondDogId: userDogId} ] };
   
