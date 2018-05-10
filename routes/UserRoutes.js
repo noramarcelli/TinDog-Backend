@@ -5,11 +5,8 @@ module.exports = app => {
   app.post('/login', (req, res) => {
 
     const user = req.body;
-    console.log({user})
     UserService.checkLogin(user).then(userFromDB => {
-      console.log('userFromDB', userFromDB)
       if (userFromDB) {
-        console.log('Login!', req.session);
         delete userFromDB.password;
         req.session.user = userFromDB;
 

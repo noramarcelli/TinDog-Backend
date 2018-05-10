@@ -10,7 +10,6 @@ module.exports.checkLogin = user => {
           err,
           userFromDB
         ) {
-          console.log("userFromDB in backend service", userFromDB);
           if (err) reject(err)
           else resolve(userFromDB)
           db.close();
@@ -34,7 +33,6 @@ module.exports.addUser = user => {
         .findOne({ name: user.name }, function(err, userFromDB) {
           // If name is already used!
           if (userFromDB) {
-            console.log('Name is already used!');
             reject('Name is already used!');
             db.close();
           } else {

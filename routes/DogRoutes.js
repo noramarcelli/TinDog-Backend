@@ -12,11 +12,15 @@ module.exports = app => {
   });
 
   app.get(`${DOG_URL}/next`, (req, res) => {
+    console.log('inside next doog route')
     const prevId = req.query.prevId;
     const userDogId = req.query.userDogId;
     DogService.getNextDogs(prevId, userDogId)
-    .then(dog => {
-      res.json(dog);
+    .then(dogs => {
+      console.log('=====')
+      console.log(dogs.map(({name}) => name))
+      console.log('=====')      
+      res.json(dogs);
     })
     .catch(err => res.status(500).send(err.message));
   });
@@ -25,8 +29,6 @@ module.exports = app => {
     const likedId = req.query.likedId;
     const userDogId = req.query.userDogId;
 
-    console.log('likedId', likedId);
-    console.log('userDogId', userDogId);
     
 
     DogService.getMatchedDog(likedId, userDogId)
@@ -54,7 +56,6 @@ module.exports = app => {
   });
 
   app.post(DOG_URL, (req, res) => {
-    console.log('inside post');
     const dog = req.body;
     DogService.addDog(dog)
       .then(dog => res.json(dog))
@@ -91,7 +92,6 @@ module.exports = app => {
     const userDogId = req.params.userDogId;
     DogService.getDogsLikes(userDogId)
       .then(dogs => {
-        console.log('dogs', dogs);
         
         res.json(dogs);
       })

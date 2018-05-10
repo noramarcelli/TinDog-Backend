@@ -8,7 +8,6 @@ module.exports = app => {
     
       MatchService.getDogMatches(userDogId)
       .then(matches => {
-        console.log('matches', matches);
         res.json(matches);
       })
       .catch(err => res.status(500).send(err.message));
@@ -20,7 +19,6 @@ module.exports = app => {
     
   //     MatchService.getDogMatches(userDogId, filterBy)
   //     .then(matches => {
-  //       console.log('matches', matches);
   //       res.json(matches);
   //     })
   //     .catch(err => res.status(500).send(err.message));

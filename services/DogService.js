@@ -20,13 +20,10 @@ function getDogs() {
 }
 
 function getById(dogId) {
-  console.log("dogId:", { dogId });
-  // dogId = new mongo.ObjectID(dogId);
+  dogId = new mongo.ObjectID(dogId);
   return new Promise((resolve, reject) => {
     DBService.dbConnect().then(db => {
       db.collection("dog").findOne({ _id: dogId }, function(err, dog) {
-        console.log("dog", { dog });
-
         if (err) reject(err);
         else resolve(dog);
         db.close();
@@ -36,27 +33,26 @@ function getById(dogId) {
 }
 
 function getNextDogs(prevId, userDogId) {
-  console.log({ prevId });
-  var criteria = { _id: { $ne: userDogId } };
-  if (prevId) criteria._id.$gt = prevId;
-
+  var criteria = {
+    _id: { $ne: new mongo.ObjectId(userDogId) }
+  };
+  if (prevId) criteria._id.$gt = new mongo.ObjectId(prevId);
   return getById(userDogId)
     .then(dog => {
-      console.log("userDogId", userDogId);
+      criteria.gender = {$ne: dog.gender};
+
       var matchedDogIds = [];
       if (dog.matches) {
         matchedDogIds = dog.matches.map(({ match }) => {
           let matchedDogId =
-            match.firstDogId !== dog._id ? match.firstDogId : match.secondDogId;
-          return matchedDogId;
+            match.firstDogId !== dog._id + '' ? match.firstDogId : match.secondDogId;
+          return new mongo.ObjectId(matchedDogId);
         });
       }
-
       return matchedDogIds;
     })
     .then(matchedDogIds => {
       criteria._id.$nin = matchedDogIds;
-      console.log({ criteria });
     })
     .then(() => {
       return new Promise((resolve, reject) => {
@@ -66,6 +62,7 @@ function getNextDogs(prevId, userDogId) {
             .find(criteria)
             .limit(2)
             .toArray((err, dogs) => {
+              console.log({ dogsInideToatt: dogs });
               if (err) reject(err);
               else resolve(dogs);
               db.close();
@@ -74,6 +71,8 @@ function getNextDogs(prevId, userDogId) {
       });
     });
 }
+
+
 
 function deleteDog(dogId) {
   // dogId = new mongo.ObjectID(dogId);
@@ -122,9 +121,7 @@ function uploadImg(imgUrl) {
   _initCloudinary();
 
   return new Promise((resolve, reject) => {
-    console.log("uploadImg inside backend service");
     cloudinary.v2.uploader.upload(imgUrl, (err, res) => {
-      console.log("res", res);
       if (err) reject(err);
       else resolve(res);
     });
@@ -143,7 +140,6 @@ function _initCloudinary() {
 }
 
 function addLike(likedId, userDogId, userId) {
-  console.log("userId inside addLike", userId);
   return DBService.dbConnect()
     .then(db => {
       return db.collection("dog").findOneAndUpdate(
@@ -167,9 +163,6 @@ function addLike(likedId, userDogId, userId) {
 
           return _createMatch(userId, matchedDog.userId, userDogId, likedId)
             .then(match => {
-              console.log("match made!!!, match:", match);
-              console.log("matchedDog inside createMatch", matchedDog);
-
               // this.$socket.emit('newMatch', matchedDog);
               return match;
             })
