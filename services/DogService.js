@@ -140,11 +140,15 @@ function _initCloudinary() {
 }
 
 function addLike(likedId, userDogId, userId) {
+  // var creteria = { $in: [likedId, pendingLikesIds] };
+
   return DBService.dbConnect()
     .then(db => {
       return db.collection("dog").findOneAndUpdate(
-        { _id: new mongo.ObjectID(userDogId) },
+        { _id: new mongo.ObjectID(userDogId), pendingLikesIds: { $nin: [likedId] } },
         // { _id: userDogId },
+        // { $push: { pendingLikesIds: likedId } },
+        // { $nin: [likedId, pendingLikesIds] },
         { $push: { pendingLikesIds: likedId } },
         { returnOriginal: false }
       );
