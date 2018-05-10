@@ -143,8 +143,8 @@ function addLike(likedId, userDogId, userId) {
   return DBService.dbConnect()
     .then(db => {
       return db.collection("dog").findOneAndUpdate(
-        // { _id: new mongo.ObjectID(userDogId) },
-        { _id: userDogId },
+        { _id: new mongo.ObjectID(userDogId) },
+        // { _id: userDogId },
         { $push: { pendingLikesIds: likedId } },
         { returnOriginal: false }
       );
@@ -200,8 +200,8 @@ function _deleteFromLikes(userDogId, likedId) {
 function _deleteFromDog(firstDogId, secondDogId) {
   return DBService.dbConnect().then(db => {
     db.collection("dog").findOneAndUpdate(
-      // {  _id: new mongo.ObjectID(firstDogId)} ,
-      { _id: firstDogId },
+      {  _id: new mongo.ObjectID(firstDogId)} ,
+      // { _id: firstDogId },
       { $pull: { pendingLikesIds: secondDogId } },
       function(err, res) {
         if (err) throw new Error("Failed to delete like from user's dog");
@@ -221,8 +221,8 @@ function _addToMatches(userDogId, likedId, match) {
 function _addMatchToDog(dogId, match) {
   return DBService.dbConnect().then(db => {
     return db.collection("dog").findOneAndUpdate(
-      // { _id: new mongo.ObjectID(dogId) },
-      { _id: dogId },
+      { _id: new mongo.ObjectID(dogId) },
+      // { _id: dogId },
       { $push: { matches: { match, isRead: false } } },
       { returnOriginal: false }
     );
@@ -270,8 +270,8 @@ function getDogsLikes(userDogId) {
 function _getMatchedDog(likedId, userDogId) {
   console.log("getMatchedDog");
   console.log({ likedId });
-  // var _id = new mongo.ObjectID(likedId);
-  var _id = likedId;
+  var _id = new mongo.ObjectID(likedId);
+  // var _id = likedId;
 
   var criteria = { $and: [{ _id }, { pendingLikesIds: userDogId }] };
 
