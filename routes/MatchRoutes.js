@@ -13,6 +13,9 @@ module.exports = app => {
       .catch(err => res.status(500).send(err.message));
   });
 
+  // app.get(`${MATCH_URL}/:matchId`, (req, res) => {
+
+  // })
   // app.post(`${MATCH_URL}`, (req, res) => {
   //   const userDogId = req.body.userDogId;
   //   const filterBy = req.body.filterBy;
