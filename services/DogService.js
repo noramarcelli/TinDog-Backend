@@ -99,15 +99,25 @@ function addDog(dog) {
     });
   });
 }
+
 function updateDog(dog) {
-  // dog._id = new mongo.ObjectID(dog._id);
-  dog._id = dog._id;
+  dog._id = new mongo.ObjectID(dog._id);
+  // dog._id = dog._id;
+
+  // console.log('inside updateDog backend');
+  // console.log('dog._id', dog._id);
+  // console.log('dog', dog);
+  
 
   return new Promise((resolve, reject) => {
     DBService.dbConnect().then(db => {
       db
         .collection("dog")
         .updateOne({ _id: dog._id }, dog, function(err, updatedDog) {
+          // console.log('updatedDog', updatedDog);
+          // console.log('err', err);
+          
+          
           if (err) reject(err);
           else resolve(updatedDog);
           db.close();
