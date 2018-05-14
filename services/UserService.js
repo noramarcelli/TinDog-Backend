@@ -130,29 +130,26 @@ module.exports.addUser = user => {
                   pendingLikesIds: [],
                   matches: []
                 }
-                db.collection('dog').insert(dog, (err, res) => {
-                  console.log(' res.ops dog after user register', res.ops );
-                  if (err) reject(err);
-                  else {
-                    var dogId = res.ops[0]._id + "";
-                    resolve(dogId)};
-                });
-
-                var dogId = res.ops[0]._id + "";
+               return db.collection('dog').insertOne(dog).then(res => {
+                  // console.log(' res.ops dog after user register', res.ops );
+                   var dogId = res.ops[0]._id + "";
+                   return dogId;
+               }).then((dogId) => {
                 user.dogId = dogId;
-                console.log('user', user);
+                // console.log('user', user);
 
                userId = new mongo.ObjectID(userId);
-               console.log('userId',  userId);
+              //  console.log('userId',  userId);
                 
                 db.collection('user').updateOne({ _id: userId }, user, function(err, updatedUser) {
-                  console.log('updatedUser after user register', updatedUser );
+                  // console.log('updatedUser after user register', updatedUser.result );
                   if (err){ 
-                    console.log('err', err);
+                    // console.log('err', err);
                     reject(err)
                   }
-                  else  resolve(updatedUser);
+                  else  resolve(updatedUser.result);
                 });
+               })
                 resolve(res.ops);
               }
               db.close();
