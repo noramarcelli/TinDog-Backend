@@ -43,6 +43,15 @@ module.exports = app => {
       .catch(err => res.status(500).send(err.message));
   });
 
+  app.get(`${USER_URL}/:userId`, (req, res) => {
+    const userId = req.params.userId;
+    UserService.getUserById(userId)
+      .then(user => {
+        res.json(user);
+      })
+      .catch(err => res.status(500).send(err.message));
+  });
+
 
 };
 

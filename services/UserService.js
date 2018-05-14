@@ -18,82 +18,34 @@ module.exports.checkLogin = user => {
   });
 };
 
-// function validateDetails(user) {
-//   console.log(user);
-//   return user.name !== 'puki';
-// }
+module.exports.getUserById = userId => {
+  console.log('inside getUserById in UserService');
+  return new Promise((resolve, reject) => {
+    console.log('userId in getUserById', userId);
 
-// module.exports.addUser = user => {
-//   return new Promise((resolve, reject) => {
-//     // let isValidate = validateDetails(user);
-//     // if (!isValidate) reject('Validate failed!');
-//     DBService.dbConnect().then(db => {
-//       db
-//         .collection('user')
-//         .findOne({ name: user.name }, function(err, userFromDB) {
-//           // If name is already used!
-//           if (userFromDB) {
-//             reject('Name is already used!');
-//             db.close();
-//           } else {
-//             db.collection('user').insert(user, (err, res) => {
-//               if (err) reject(err);
-//               else resolve(res.ops);
-//               db.close();
-//             });
-//           }
-          
-//         });
-//     });
-//   });
-// };
-
-// module.exports.addUser = user => {
-//   return new Promise((resolve, reject) => {
-//     // let isValidate = validateDetails(user);
-//     // if (!isValidate) reject('Validate failed!');
-//     DBService.dbConnect().then(db => {
-//       db
-//         .collection('user')
-//         .findOne({ name: user.name }, function(err, userFromDB) {
-//           // If name is already used!
-//           if (userFromDB) {
-//             reject('Name is already used!');
-//             db.close();
-//           } else {
-//             db.collection('user').insert(user, (err, res) => {
-//               console.log('res.ops after user insert: ', res.ops);
-//               console.log('res.ops[0]._id after user insert: ', res.ops[0]._id);
-//               if (err) reject(err);
-//               else {
-//                 var dog = {
-//                   name: "",
-//                   imgs: [],
-//                   breed: "",
-//                   age: "",
-//                   description: "",
-//                   gender: "",
-//                   favs: [],
-//                   weight: "",
-//                   city: "",
-//                   userId: res.ops[0]._id + "",
-//                   pendingLikesIds: [],
-//                   matches: []
-//                 }
-//                 db.collection('dog').insert(dog, (err, res) => {
-//                   console.log(' res.ops dog after user register', res.ops );
-//                   if (err) reject(err);
-//                   else  resolve(res.ops);
-//                 });
-//                 resolve(res.ops);
-//               }
-//               db.close();
-//             });
-//           }
-//         });
-//     });
-//   });
-// };
+    var _id = new mongo.ObjectID(userId);
+    
+    
+    DBService.dbConnect().then(db => {
+      db
+        .collection('user')
+        .findOne({ _id }, function(
+          err,
+          userFromDB
+        ) {
+          if (err){
+            console.log('err', err);
+            reject(err)
+          } 
+          else{
+            console.log('userFromDB', userFromDB);
+            resolve(userFromDB)
+          }
+          db.close();
+        });
+    });
+  });
+};
 
 module.exports.addUser = user => {
   return new Promise((resolve, reject) => {
@@ -159,4 +111,3 @@ module.exports.addUser = user => {
     });
   });
 };
-
