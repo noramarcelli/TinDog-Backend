@@ -2,10 +2,14 @@
   "name": "websocket-sample",
   "version": "1.0.0",
   "description": "",
+  "main" : "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon server.js"
   },
+  "keywords": [
+    "heroku"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -16,5 +20,8 @@
     "express": "^4.10.2",
     "mongodb": "^2.2.35",
     "socket.io": "^1.7.2"
+  },
+  "engines": {
+    "node": "9.9.0"
   }
 }

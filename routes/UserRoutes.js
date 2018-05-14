@@ -1,5 +1,5 @@
 var UserService = require('../services/UserService')
-var USER_URL = "/user";
+var USER_URL = '/user';
 
 module.exports = app => {
   app.post('/login', (req, res) => {
