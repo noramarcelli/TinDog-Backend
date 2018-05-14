@@ -30,8 +30,33 @@ function getDogMatches(userDogId) {
   })
 }
 
+function getMatchByDogsIds(firstDogId, secondDogId) {
+
+console.log('inside getMatchByDogsIds');
+
+
+ var firstDogId = new mongo.ObjectID(firstDogId);
+ var secondDogId = new mongo.ObjectID(secondDogId);
+
+//  { $or: [ { quantity: { $lt: 20 } }, { price: 10 } ] } 
+// var criteria = { $and: [{ _id }, { pendingLikesIds: userDogId }] };
+
+ var criteria = { $and: [{ firstDogId }, { secondDogId }] };
+ 
+  return new Promise((resolve, reject) => {
+    DBService.dbConnect().then(db => {
+      db.collection("match").findOne({ criteria }, function(err, match) {
+        if (err) reject(err);
+        else resolve(match);
+        db.close();
+      });
+    });
+  });
+}
+
 
 module.exports = {
    getDogMatches,
-   addMsgToMatch
+   addMsgToMatch,
+   getMatchByDogsIds
 };

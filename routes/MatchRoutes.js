@@ -13,6 +13,19 @@ module.exports = app => {
       .catch(err => res.status(500).send(err.message));
   });
 
+
+  app.get(`${MATCH_URL}`, (req, res) => {
+    const firstDogId = req.query.firstDogId;
+    const secondDogId = req.query.secondDogId;
+
+    MatchService.getMatchByDogsIds(firstDogId, secondDogId).
+    then(match => {
+      res.json(match);
+    })
+    .catch(err => res.status(500).send(err.message));
+  });
+
+
   // app.get(`${MATCH_URL}/:matchId`, (req, res) => {
 
   // })
