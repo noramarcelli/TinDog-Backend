@@ -62,7 +62,7 @@ function getNextDogs(prevId, userDogId) {
             .find(criteria)
             .limit(2)
             .toArray((err, dogs) => {
-              console.log({ dogsInideToatt: dogs });
+              // console.log({ dogsInideToatt: dogs });
               if (err) reject(err);
               else resolve(dogs);
               db.close();
