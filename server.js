@@ -2,12 +2,15 @@ var express = require('express');
 var cors = require('cors');
 var app = express();
 
+const PORT = process.env.PORT || 3000;
+
 var corsOptions = {
 	origin: [/http:\/\/127.0.0.1:\d+/, 'http://localhost:8080'],
 	credentials: true
 };
 
 app.use(cors(corsOptions))
+app.use(express.static('dist'));
 
 
 
@@ -50,7 +53,7 @@ addDogRoutes(app)
 const addMatchRoutes = require('./routes/MatchRoutes.js')
 addMatchRoutes(app)
 
-http.listen(3000, () => {
-  console.log('listening on *:3000');
+http.listen(PORT, () => {
+  console.log(`listening on ${PORT}`);
 });
 
