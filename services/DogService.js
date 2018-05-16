@@ -215,7 +215,6 @@ function _deleteFromDog(firstDogId, secondDogId) {
   return DBService.dbConnect().then(db => {
     db.collection("dog").findOneAndUpdate(
       {  _id: new mongo.ObjectID(firstDogId)} ,
-      // { _id: firstDogId },
       { $pull: { pendingLikesIds: secondDogId } },
       function(err, res) {
         if (err) throw new Error("Failed to delete like from user's dog");
