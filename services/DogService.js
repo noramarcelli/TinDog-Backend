@@ -62,7 +62,6 @@ function getNextDogs(prevId, userDogId) {
             .find(criteria)
             .limit(2)
             .toArray((err, dogs) => {
-              // console.log({ dogsInideToatt: dogs });
               if (err) reject(err);
               else resolve(dogs);
               db.close();
@@ -102,22 +101,11 @@ function addDog(dog) {
 
 function updateDog(dog) {
   dog._id = new mongo.ObjectID(dog._id);
-  // dog._id = dog._id;
-
-  // console.log('inside updateDog backend');
-  // console.log('dog._id', dog._id);
-  // console.log('dog', dog);
-  
-
   return new Promise((resolve, reject) => {
     DBService.dbConnect().then(db => {
       db
         .collection("dog")
         .updateOne({ _id: dog._id }, dog, function(err, updatedDog) {
-          // console.log('updatedDog', updatedDog);
-          // console.log('err', err);
-          
-          
           if (err) reject(err);
           else resolve(updatedDog);
           db.close();
@@ -127,7 +115,6 @@ function updateDog(dog) {
 }
 
 function uploadImg(imgUrl) {
-  // console.log('uploadImg inside backend service');
   _initCloudinary();
 
   return new Promise((resolve, reject) => {
@@ -150,22 +137,16 @@ function _initCloudinary() {
 }
 
 function addLike(likedId, userDogId, userId) {
-  // var creteria = { $in: [likedId, pendingLikesIds] };
-
   return DBService.dbConnect()
     .then(db => {
       return db.collection("dog").findOneAndUpdate(
         { _id: new mongo.ObjectID(userDogId), pendingLikesIds: { $nin: [likedId] } },
-        // { _id: userDogId },
-        // { $push: { pendingLikesIds: likedId } },
-        // { $nin: [likedId, pendingLikesIds] },
         { $push: { pendingLikesIds: likedId } },
         { returnOriginal: false }
       );
     })
     .then(res => {
       if (res.value) {
-        // return _getMatchedDog(likedId, userDogId)
         return _getMatchedDog(likedId, userDogId).then(matchedDog => {
           if (!matchedDog) return;
           console.log(
@@ -173,18 +154,14 @@ function addLike(likedId, userDogId, userId) {
             matchedDog
           );
 
-          // this.$socket.emit('newMatch', matchedDog);
-
           return _createMatch(userId, matchedDog.userId, userDogId, likedId)
             .then(match => {
-              // this.$socket.emit('newMatch', matchedDog);
               return match;
             })
             .catch(err => {
               reject(err);
             });
         });
-        // return res.value;
       } else {
         console.log({ res });
         throw new Error("could not update dog");
@@ -194,8 +171,6 @@ function addLike(likedId, userDogId, userId) {
 
 function _createMatch(userId, likedDogUserId, userDogId, likedId) {
   return _addMatch(userId, likedDogUserId, userDogId, likedId).then(match => {
-    // console.log('matchId in createMatch', matchId);
-
     return _addToMatches(userDogId, likedId, match)
       .then(() => {
         return _deleteFromLikes(userDogId, likedId);
@@ -235,7 +210,6 @@ function _addMatchToDog(dogId, match) {
   return DBService.dbConnect().then(db => {
     return db.collection("dog").findOneAndUpdate(
       { _id: new mongo.ObjectID(dogId) },
-      // { _id: dogId },
       { $push: { matches: { match, isRead: false } } },
       { returnOriginal: false }
     );
@@ -284,8 +258,6 @@ function _getMatchedDog(likedId, userDogId) {
   console.log("getMatchedDog");
   console.log({ likedId });
   var _id = new mongo.ObjectID(likedId);
-  // var _id = likedId;
-
   var criteria = { $and: [{ _id }, { pendingLikesIds: userDogId }] };
 
   return new Promise((resolve, reject) => {
